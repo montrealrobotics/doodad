@@ -72,7 +72,7 @@ eu-central-1=ami-f652a999
 eu-west-1=ami-8c0a5dff
 sa-east-1=ami-3f2cb053
 us-east-1=ami-de5171c9
-us-east-2=ami-e0481285
+us-east-2=ami-024f0e84c5a8282a8
 us-west-1=ami-efb5ff8f
 us-west-2=ami-53903033
 

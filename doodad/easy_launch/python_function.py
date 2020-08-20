@@ -49,6 +49,12 @@ NON_CODE_MOUNTS = [
     mount.MountLocal(**non_code_mapping)
     for non_code_mapping in config.NON_CODE_DIRS_TO_MOUNT
 ]
+
+NON_CODE_MOUNTS = NON_CODE_MOUNTS + [
+    mount.MountLocal(local_dir=m['local_dir'], mount_point=m['mount_point'])
+    for m in config.DIR_AND_MOUNT_POINT_MAPPINGS
+    ]
+
 SSS_CODE_MOUNTS = [
     mount.MountLocal(**non_code_mapping)
     for non_code_mapping in config.SSS_NON_CODE_DIRS_TO_MOUNT

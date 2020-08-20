@@ -94,10 +94,10 @@ def run_single_doodad(run_method, kwargs, run_mode, mounts, repeat=1):
 
 
 if __name__ == "__main__":
-    def example_run_method(exp_name, param1, param2='a', param3=3, param4=4):
+    def example_run_method(param1, param2='a', param3=3, param4=4):
         import time
         time.sleep(1.0)
-        print(exp_name, param1, param2, param3, param4)
+        print( param1, param2, param3, param4)
     sweep_op = {
         'param1': [1e-3, 1e-2, 1e-1],
         'param2': [1,5,10,20],

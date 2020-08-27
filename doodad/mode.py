@@ -921,7 +921,7 @@ class SingularityMode(LaunchMode):
 
 
 class LocalSingularity(SingularityMode):
-    def __init__(self, *args, skip_wait=False, **kwargs):
+    def __init__(self, skip_wait=False, *args, **kwargs):
         super(LocalSingularity, self).__init__(*args, **kwargs)
         self.skip_wait = skip_wait
 
@@ -990,7 +990,7 @@ class SlurmSingularity(SingularityMode):
     def __init__(
             self,
             image,
-            slurm_config: SlurmConfig,
+            slurm_config,
             skip_wait=False,
             **kwargs
     ):

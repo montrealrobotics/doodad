@@ -35,9 +35,9 @@ class SlurmConfig(object):
 
 
 def wrap_command_with_sbatch(
-        cmd: str,
-        config: SlurmConfig,
-        n_tasks: int,
+        cmd,
+        config,
+        n_tasks,
 ):
     """
     Wrap a command around a call to sbatch

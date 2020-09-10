@@ -1,5 +1,5 @@
 import os
-import configparser
+# import configparser
 import io
 
 class AWSCredentials(object):

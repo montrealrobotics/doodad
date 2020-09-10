@@ -1,8 +1,8 @@
 import doodad as dd
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('agg')
+#     import matplotlib
+#     matplotlib.use('agg')
 
     args_dict = dd.get_args()
     method_call = args_dict['method_call']

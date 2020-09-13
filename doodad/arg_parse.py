@@ -58,6 +58,7 @@ def encode_args(call_args, cloudpickle=False):
 
     if cloudpickle:
         import cloudpickle
+        print ("call_args: ", call_args)
         cpickle_version = cloudpickle.__version__
         data = base64.b64encode(cloudpickle.dumps(call_args)).decode("utf-8")
     else:

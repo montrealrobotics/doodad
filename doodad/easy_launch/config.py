@@ -118,15 +118,28 @@ GCP_FILE_TYPES_TO_SAVE = (
 )
 
 # Overwrite with private configurations
+
 try:
-    from doodad.easy_launch.config_private import *
-except ImportError as e:
-    from doodad.utils import REPO_DIR
-    import os.path as osp
-    command_to_run = "cp {} {}".format(
-        __file__,
-        __file__[:-3] + '_private.py',
-        )
-    print("You should set up the private config files. Run:\n\n  {}\n".format(
-        command_to_run
-    ))
+    from launchers.config_private_rlframe import *
+    print ("Running RL-Framework")
+except:
+    print ("RL-Framework not installed")
+    pass 
+try:
+    from launchers.config_private_comps import *
+    print ("Running CoMPS")
+except:
+    print ("CoMPS not installed")
+    pass 
+try:
+    from launchers.config_private_smirl import *
+    print ("Running SMiRL")
+except:
+    print ("SMiRL not installed")
+    pass 
+try:
+    from launchers.config_private_llm import *
+    print ("Running LLM")
+except:
+    print ("LLM not installed")
+    pass 

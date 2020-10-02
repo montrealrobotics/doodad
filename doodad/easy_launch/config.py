@@ -138,7 +138,7 @@ except:
     print ("SMiRL not installed")
     pass 
 try:
-    from launchers.config_private_llm import *
+    from railrl.launchers.config_private_llm import *
     print ("Running LLM")
 except:
     print ("LLM not installed")

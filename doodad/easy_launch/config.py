@@ -38,7 +38,7 @@ SSH_HOSTS = dict(
         hostname='TODO.domain.edu',
     ),
 )
-SSH_DEFAULT_HOST = 'vitchyr'
+SSH_DEFAULT_HOST = 'user'
 SSH_PRIVATE_KEY = '~/.ssh/id_rsa'
 SSH_LOG_DIR = '~/shared/res'
 SSH_TMP_DIR = '~/shared/tmp'
@@ -80,7 +80,7 @@ SSS_CODE_DIRS_TO_MOUNT = [
 ]
 SSS_NON_CODE_DIRS_TO_MOUNT = [
 ]
-SSS_LOG_DIR = '/global/scratch/vitchyr/doodad-log'
+SSS_LOG_DIR = '/global/scratch/user/doodad-log'
 
 
 SSS_GPU_IMAGE = 'TODO'
@@ -138,7 +138,7 @@ except:
     print ("SMiRL not installed")
     pass 
 try:
-    from launchers.config_private_llm import *
+    from railrl.launchers.config_private_llm import *
     print ("Running LLM")
 except:
     print ("LLM not installed")

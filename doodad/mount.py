@@ -36,7 +36,7 @@ class Mount(object):
 
 class MountLocal(Mount):
     def __init__(self, local_dir, mount_point=None, cleanup=True,
-                filter_ext=('.pyc', '.log', '.git', '.mp4', '.idea'),
+                filter_ext=('.pyc', '.log', '.git', '.mp4', '.idea', '.img'),
                 filter_dir=('data', '.git', 'saved_expert_trajs', 'data_backup'),
                 **kwargs):
         super(MountLocal, self).__init__(mount_point=mount_point, **kwargs)

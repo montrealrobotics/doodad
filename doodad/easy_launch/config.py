@@ -1,9 +1,25 @@
 CODE_DIRS_TO_MOUNT = [
+    ## location of SMiRL code
 ]
 NON_CODE_DIRS_TO_MOUNT = [
+    ## Maybe some simulation you are importing to run.
 ]
 LOCAL_LOG_DIR = '/tmp/doodad-output/'
 OUTPUT_DIR_FOR_DOODAD_TARGET = '/tmp/doodad-output/'
+DIR_AND_MOUNT_POINT_MAPPINGS = [
+    dict(
+        local_dir='/home/gberseth/.mujoco/',
+        mount_point='/root/.mujoco',
+    ),
+#     dict(
+#         local_dir='/home/gberseth/playground/CoMPS',
+#         mount_point='/root/playground/CoMPS',
+#     ),
+#     dict(
+#         local_dir='/home/gberseth/playground/doodad_vitchry',
+#         mount_point='/root/playground/doodad',
+#     ),
+]
 
 
 """

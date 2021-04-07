@@ -159,3 +159,10 @@ try:
 except:
     print ("LLM not installed")
     pass 
+
+try:
+    from launchers.config import *
+    print ("Running Something?")
+except:
+    print ("Something not installed")
+    pass 

@@ -56,7 +56,7 @@ def wrap_command_with_sbatch(
         full_cmd = (
             "sbatch -A {account_name} -p {partition} -t {time}"
             " -N {nodes} -n {n_tasks} --cpus-per-task={cpus_per_task}"
-            " --gres=gpu:{n_gpus} {extra_flags} --wrap=$'{cmd}'".format(
+            " --gres=gpu:TITAN:{n_gpus} {extra_flags} --wrap=$'{cmd}'".format(
                 account_name=config.account_name,
                 partition=config.partition,
                 time=config.time_in_mins,

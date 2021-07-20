@@ -136,31 +136,6 @@ GCP_FILE_TYPES_TO_SAVE = (
 # Overwrite with private configurations
 
 try:
-    from launchers.config_private_rlframe import *
-    print ("Running RL-Framework")
-except:
-    print ("RL-Framework not installed")
-    pass 
-try:
-    from launchers.config_private_comps import *
-    print ("Running CoMPS")
-except:
-    print ("CoMPS not installed")
-    pass 
-try:
-    from launchers.config_private_smirl import *
-    print ("Running SMiRL")
-except:
-    print ("SMiRL not installed")
-    pass 
-try:
-    from railrl.launchers.config_private_llm import *
-    print ("Running LLM")
-except:
-    print ("LLM not installed")
-    pass 
-
-try:
     from launchers.config import *
     print ("Running Something?")
 except:

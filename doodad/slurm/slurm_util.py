@@ -19,6 +19,7 @@ class SlurmConfig(object):
             max_num_cores_per_node,
             n_gpus=0,
             n_cpus_per_task=1,
+            mem="8Gb",
             n_nodes=None,
             extra_flags="",
     ):
@@ -32,6 +33,7 @@ class SlurmConfig(object):
         self.n_cpus_per_task = n_cpus_per_task
         self.max_num_cores_per_node = max_num_cores_per_node
         self.extra_flags = extra_flags
+        self.mem = mem
 
 
 def wrap_command_with_sbatch(
@@ -55,7 +57,7 @@ def wrap_command_with_sbatch(
     if config.n_gpus > 0:
         full_cmd = (
             "sbatch --account={account_name} --time={time}"
-            " -N {nodes} --ntasks={n_tasks} --cpus-per-task={cpus_per_task}"
+            " -N {nodes} --ntasks={n_tasks} --cpus-per-task={cpus_per_task} --mem={mem}"
             " --gres=gpu:TITAN:{n_gpus} {extra_flags} --wrap=$'{cmd}'".format(
                 account_name=config.account_name,
                 partition=config.partition,
@@ -63,6 +65,7 @@ def wrap_command_with_sbatch(
                 nodes=n_nodes,
                 n_tasks=n_tasks,
                 cpus_per_task=config.n_cpus_per_task,
+                mem=config.mem,
                 cmd=cmd,
                 n_gpus=config.n_gpus,
                 extra_flags=config.extra_flags,
@@ -71,7 +74,7 @@ def wrap_command_with_sbatch(
     else:
         full_cmd = (
             "sbatch --account={account_name} --time={time}"
-            " -N {nodes} --ntasks={n_tasks} --cpus-per-task={cpus_per_task}"
+            " -N {nodes} --ntasks={n_tasks} --cpus-per-task={cpus_per_task} --mem={mem}"
             " {extra_flags} --wrap=$'{cmd}'".format(
                 account_name=config.account_name,
                 partition=config.partition,
@@ -79,6 +82,7 @@ def wrap_command_with_sbatch(
                 nodes=n_nodes,
                 n_tasks=n_tasks,
                 cpus_per_task=config.n_cpus_per_task,
+                mem=config.mem,
                 cmd=cmd,
                 extra_flags=config.extra_flags,
             )

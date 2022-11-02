@@ -54,8 +54,8 @@ def wrap_command_with_sbatch(
         num_cpus / config.max_num_cores_per_node)
     if config.n_gpus > 0:
         full_cmd = (
-            "sbatch -A {account_name} -p {partition} -t {time}"
-            " -N {nodes} -n {n_tasks} --cpus-per-task={cpus_per_task}"
+            "sbatch --account={account_name} --time={time}"
+            " -N {nodes} --ntasks={n_tasks} --cpus-per-task={cpus_per_task}"
             " --gres=gpu:TITAN:{n_gpus} {extra_flags} --wrap=$'{cmd}'".format(
                 account_name=config.account_name,
                 partition=config.partition,
@@ -70,8 +70,8 @@ def wrap_command_with_sbatch(
         )
     else:
         full_cmd = (
-            "sbatch -A {account_name} -p {partition} -t {time}"
-            " -N {nodes} -n {n_tasks} --cpus-per-task={cpus_per_task}"
+            "sbatch --account={account_name} --time={time}"
+            " -N {nodes} --ntasks={n_tasks} --cpus-per-task={cpus_per_task}"
             " {extra_flags} --wrap=$'{cmd}'".format(
                 account_name=config.account_name,
                 partition=config.partition,

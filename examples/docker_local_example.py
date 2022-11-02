@@ -3,7 +3,7 @@ Example script for using newton machines via docker + rllab
 """
 
 def my_func(doodad_config, variant):
-    
+    ### Import everything here. Not on the top level.
     print (variant)
     print (doodad_config)
     

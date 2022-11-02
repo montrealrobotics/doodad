@@ -1,8 +1,7 @@
 ### Update this to the location you have saved the SMiRL code.
-BASE_CODE_DIR = "/home/gberseth/playground"
 
 CODE_DIRS_TO_MOUNT = [
-    BASE_CODE_DIR + "/SMiRL_Code"
+        "/path/to/your/code"
 ]
 NON_CODE_DIRS_TO_MOUNT = [
 ]

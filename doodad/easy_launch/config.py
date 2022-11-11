@@ -68,10 +68,9 @@ SINGULARITY_PRE_CMDS = [
 
 
 """
-BRC/Slurm Settings
+Slurm Script Settings (or HTP).
 
-These are basically the same settings as above, but for the remote machine
-where you will be running the generated script.
+The comments assume you're running on BRC.
 """
 SLURM_CONFIGS = dict(
     cpu=dict(
@@ -88,20 +87,28 @@ SLURM_CONFIGS = dict(
         n_cpus_per_task=2,
     ),
 )
+# This is necessary for the GPU machines on BRC.
 BRC_EXTRA_SINGULARITY_ARGS = '--writable -B /usr/lib64 -B /var/lib/dcv-gl'
-TASKFILE_PATH_ON_BRC = 'TODO'
+# Point to some directory on slurm where tasks will be copied to
+TASKFILE_DIR_ON_BRC = 'TODO'
 
 
+# This is the same as `CODE_DIRS_TO_MOUNT` but the paths should be relative to
+# wherever you're running the slurm jobs (e.g. on BRC).
 SSS_CODE_DIRS_TO_MOUNT = [
 ]
 SSS_NON_CODE_DIRS_TO_MOUNT = [
 ]
+# where do you want doodad to output to when using SSS (or HTP) mode?
 SSS_LOG_DIR = '/global/scratch/user/doodad-log'
 
 
+# point to your singularity image with an absolute path on BRC.
 SSS_GPU_IMAGE = 'TODO'
 SSS_CPU_IMAGE = 'TODO'
+# point to `doodad/easy_launch/run_experimenty.py`
 SSS_RUN_DOODAD_EXPERIMENT_SCRIPT_PATH = 'TODO'
+# add any extra pre-commands to your script
 SSS_PRE_CMDS = [
     'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH'
 ]
@@ -136,8 +143,14 @@ GCP_FILE_TYPES_TO_SAVE = (
 # Overwrite with private configurations
 
 try:
-    from launchers.config import *
-    print ("Running Something?")
-except:
-    print ("Something not installed")
-    pass 
+    from launchers.config_private import *
+except ImportError as e:
+    from doodad.utils import REPO_DIR
+    import os.path as osp
+    command_to_run = "cp {} {}".format(
+        __file__,
+        __file__[:-3] + '_private.py',
+        )
+    print("You should set up the private config files. Run:\n\n  {}\n".format(
+        command_to_run
+    ))

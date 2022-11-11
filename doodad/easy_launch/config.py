@@ -88,7 +88,7 @@ SLURM_CONFIGS = dict(
     ),
 )
 # This is necessary for the GPU machines on BRC.
-BRC_EXTRA_SINGULARITY_ARGS = '--writable -B /usr/lib64 -B /var/lib/dcv-gl'
+BRC_EXTRA_SINGULARITY_ARGS = '--writable-tmpfs '
 # Point to some directory on slurm where tasks will be copied to
 TASKFILE_DIR_ON_BRC = 'TODO'
 

@@ -4,6 +4,7 @@ import os.path as osp
 import sys
 import time
 from typing import NamedTuple, List, Union
+import uuid
 
 import __main__ as main
 
@@ -68,6 +69,7 @@ SSS_NON_CODE_MOUNTS = [
 _global_target_mount = None
 _global_is_first_launch = True
 _global_n_tasks_total = 0
+_global_launch_uuid = str(uuid.uuid4())
 
 
 def run_experiment(
@@ -311,9 +313,10 @@ def run_experiment(
                 pre_cmd=config.SSS_PRE_CMDS,
                 extra_args=config.BRC_EXTRA_SINGULARITY_ARGS,
                 slurm_config=slurm_config,
-                taskfile_path_on_brc=config.TASKFILE_PATH_ON_BRC,
+                taskfile_dir_on_brc=config.TASKFILE_DIR_ON_BRC,
                 overwrite_task_script=_global_is_first_launch,
                 n_tasks_total=_global_n_tasks_total,
+                launch_id=_global_launch_uuid
             )
         else:
             dmode = doodad.mode.ScriptSlurmSingularity(

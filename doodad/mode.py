@@ -188,6 +188,9 @@ class SSHDocker(DockerMode):
         remote_cmds = utils.CommandBuilder()
         remote_cleanup_commands = utils.CommandBuilder()
         mnt_args = ''
+        remote_cmds.append('docker login')
+        print ('self.docker_image: ', self.docker_image)
+        remote_cmds.append('docker pull ' + self.docker_image)
 
         tmp_dir_cmd = 'mkdir -p %s' % self.tmp_dir
         tmp_dir_cmd = self.credentials.get_ssh_bash_cmd(tmp_dir_cmd)

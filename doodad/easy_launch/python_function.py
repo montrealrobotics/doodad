@@ -409,6 +409,9 @@ def run_experiment(
         base_log_dir_for_script = config.OUTPUT_DIR_FOR_DOODAD_TARGET
     elif mode == 'ssh':
         base_log_dir_for_script = config.OUTPUT_DIR_FOR_DOODAD_TARGET
+        if (ssh_dict['use_singularity']):
+            ## This might be a bit of a hack. It depends on how singularity works on remote servers and if they use the same dir structure in the singularity image.
+            launch_locally = True
     elif mode in {'local_singularity', 'slurm_singularity', 'sss', 'htp'}:
         base_log_dir_for_script = base_log_dir
         launch_locally = True

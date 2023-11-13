@@ -966,12 +966,10 @@ class SSHSingularity(SingularityMode):
         remote_cmds = utils.CommandBuilder()
         remote_cleanup_commands = utils.CommandBuilder()
         mnt_args = ''
-        # remote_cmds.append('docker login')
-        # print ('self.docker_image: ', self.singularity_image)
-        # remote_cmds.append('docker pull ' + self.singularity_image)
         
         self.build_singularity(dry=False, verbose=False)
 
+        remote_cmds.append('module load apptainer')
         tmp_dir_cmd = 'mkdir -p %s' % self.tmp_dir
         tmp_dir_cmd = self.credentials.get_ssh_bash_cmd(tmp_dir_cmd)
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
@@ -1034,13 +1032,13 @@ class SSHSingularity(SingularityMode):
 
     def build_singularity(self, dry=False, verbose=False):
         print("Building singularity image from docker container: docker-daemon://" + self.singularity_image)
-        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build local_app.sif docker-daemon://" + self.singularity_image
+        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build ../local_app.sif docker-daemon://" + self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
         
         self.singularity_image="local_app.sif"
-        tmp_dir_cmd = "chmod 777 "+ self.singularity_image
+        tmp_dir_cmd = "chmod 777 ../"+ self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
-        mv_dir_cmd = "rsync -av --progress -e ssh " + self.singularity_image + " localhost:"
+        mv_dir_cmd = "rsync -av --progress -e ssh ../" + self.singularity_image + " localhost:"
         utils.call_and_wait(mv_dir_cmd, dry=dry, verbose=verbose)
 
 

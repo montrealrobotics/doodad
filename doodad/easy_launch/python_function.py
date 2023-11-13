@@ -285,7 +285,6 @@ def run_experiment(
                 image=docker_image,
                 gpu=use_gpu,
                 tmp_dir=config.SSH_TMP_DIR,
-                use_singularity=ssh_dict['use_singularity']
             )
     elif mode == 'local_singularity':
         dmode = doodad.mode.LocalSingularity(

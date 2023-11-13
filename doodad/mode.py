@@ -933,6 +933,7 @@ class SingularityMode(LaunchMode):
             
         main_cmd = cmd_list.to_string()
         full_cmd = singularity_prefix + ("\'%s\'" % main_cmd)
+        print ("full_cmd: ", full_cmd)
         return full_cmd
 
 
@@ -965,9 +966,9 @@ class SSHSingularity(SingularityMode):
         remote_cmds = utils.CommandBuilder()
         remote_cleanup_commands = utils.CommandBuilder()
         mnt_args = ''
-        remote_cmds.append('docker login')
-        print ('self.docker_image: ', self.singularity_image)
-        remote_cmds.append('docker pull ' + self.singularity_image)
+        # remote_cmds.append('docker login')
+        # print ('self.docker_image: ', self.singularity_image)
+        # remote_cmds.append('docker pull ' + self.singularity_image)
         
         self.build_singularity(dry=False, verbose=False)
 
@@ -1032,14 +1033,15 @@ class SSHSingularity(SingularityMode):
             utils.call_and_wait(ssh_cmd, dry=dry, verbose=verbose)
 
     def build_singularity(self, dry=False, verbose=False):
-        print("Building singularity image from docker")
-        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build local_app.sif docker-daemon://ubuntu:20.04"
+        print("Building singularity image from docker container: docker-daemon://" + self.singularity_image)
+        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build local_app.sif docker-daemon://" + self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
+        
         self.singularity_image="local_app.sif"
-        tmp_dir_cmd = "chmod 777 local_app.sif"
+        tmp_dir_cmd = "chmod 777 "+ self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
-        mv_dir_cmd = "rsync -av --progress -e ssh local_app.sif  localhost:"
-        utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
+        mv_dir_cmd = "rsync -av --progress -e ssh " + self.singularity_image + " localhost:"
+        utils.call_and_wait(mv_dir_cmd, dry=dry, verbose=verbose)
 
 
 class BrcHighThroughputMode(SingularityMode):

@@ -1038,7 +1038,9 @@ class SSHSingularity(SingularityMode):
         self.singularity_image="local_app.sif"
         tmp_dir_cmd = "chmod 777 ../"+ self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
-        mv_dir_cmd = "rsync -av --progress -e ssh ../" + self.singularity_image + " localhost:"
+        mv_dir_cmd = "rsync -av --progress -e ssh ../" + self.singularity_image + " " + self.credentials.user_host + ':'
+        print ('moving built singularity image')
+        print (mv_dir_cmd)
         utils.call_and_wait(mv_dir_cmd, dry=dry, verbose=verbose)
 
 

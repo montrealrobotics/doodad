@@ -1107,7 +1107,6 @@ class BrcHighThroughputMode(SingularityMode):
             overwrite=True,
         )
 
-
 class SlurmSingularity(SingularityMode):
     # TODO: set up an auto-config
     def __init__(
@@ -1141,6 +1140,50 @@ class SlurmSingularity(SingularityMode):
         )
         return full_cmd
 
+class SSHSlurmSingularity(SSHSingularity):
+    TMP_DIR = '~/.remote_tmp'
+
+    def __init__(self, credentials=None, tmp_dir=None, use_singularity=False, **docker_args):
+        if tmp_dir is None:
+            tmp_dir = SSHDocker.TMP_DIR
+        super(SSHSingularity, self).__init__(**docker_args)
+        self.credentials = credentials
+        self.run_id = 'run_%s' % uuid.uuid4()
+        self.tmp_dir = os.path.join(tmp_dir, self.run_id)
+        self.checkpoint = None
+        self.use_singularity = use_singularity
+    
+    def launch_command(self, main_cmd, mount_points=None, dry=False,
+                       verbose=False):
+        
+        ## Run some empty command just to build and push the singularity image
+        super(SSHSlurmSingularity, self).launch_command(main_cmd, mount_points=None, dry=False,
+                       verbose=False)
+        
+        # Then we can create a slurm command and send it to the cluster.
+        full_cmd = self.create_slurm_command(
+            cmd, mount_points=mount_points,
+        )
+        utils.call_and_wait(
+            full_cmd, verbose=verbose, dry=dry, skip_wait=self.skip_wait
+        )
+    
+    
+    
+    
+    def create_slurm_command(self, cmd, mount_points=None):
+        singularity_cmd = self.create_singularity_cmd(
+            cmd,
+            mount_points=mount_points,
+        )
+        full_cmd = slurm_util.wrap_command_with_sbatch(
+            singularity_cmd,
+            self._slurm_config,
+            n_tasks=1,
+        )
+        return full_cmd
+    
+    
 
 class ScriptSlurmSingularity(SlurmSingularity):
     """

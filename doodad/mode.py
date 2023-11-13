@@ -191,7 +191,7 @@ class SSHDocker(DockerMode):
         remote_cmds.append('docker login')
         print ('self.docker_image: ', self.docker_image)
         remote_cmds.append('docker pull ' + self.docker_image)
-
+        
         tmp_dir_cmd = 'mkdir -p %s' % self.tmp_dir
         tmp_dir_cmd = self.credentials.get_ssh_bash_cmd(tmp_dir_cmd)
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
@@ -251,7 +251,7 @@ class SSHDocker(DockerMode):
             ssh_cmd = self.credentials.get_ssh_script_cmd(ntf.name)
 
             utils.call_and_wait(ssh_cmd, dry=dry, verbose=verbose)
-
+        
 
 def dedent(s):
     lines = [l.strip() for l in s.split('\n')]
@@ -886,6 +886,8 @@ class SingularityMode(LaunchMode):
             self,
             main_cmd,
             mount_points=None,
+            use_tty=False,
+            extra_args=False
     ):
         extra_args = self._extra_args
         cmd_list = utils.CommandBuilder()
@@ -915,10 +917,20 @@ class SingularityMode(LaunchMode):
 
         if self.gpu:
             extra_args += ' --nv '
-        singularity_prefix = 'singularity exec %s %s /bin/bash -c ' % (
-            extra_args,
-            self.singularity_image,
-        )
+            
+            
+        if use_tty:
+            ## Not really supported
+            singularity_prefix = 'singularity exec %s %s /bin/bash -c ' % (
+                extra_args,
+                self.singularity_image,
+            )
+        else:
+            singularity_prefix = 'singularity exec %s %s /bin/bash -c ' % (
+                extra_args,
+                self.singularity_image,
+            )
+            
         main_cmd = cmd_list.to_string()
         full_cmd = singularity_prefix + ("\'%s\'" % main_cmd)
         return full_cmd
@@ -933,6 +945,101 @@ class LocalSingularity(SingularityMode):
         full_cmd = self.create_singularity_cmd(cmd, mount_points=mount_points)
         utils.call_and_wait(full_cmd, verbose=verbose, dry=dry,
                             skip_wait=self.skip_wait)
+        
+class SSHSingularity(SingularityMode):
+    TMP_DIR = '~/.remote_tmp'
+
+    def __init__(self, credentials=None, tmp_dir=None, use_singularity=False, **docker_args):
+        if tmp_dir is None:
+            tmp_dir = SSHDocker.TMP_DIR
+        super(SSHSingularity, self).__init__(**docker_args)
+        self.credentials = credentials
+        self.run_id = 'run_%s' % uuid.uuid4()
+        self.tmp_dir = os.path.join(tmp_dir, self.run_id)
+        self.checkpoint = None
+        self.use_singularity = use_singularity
+
+    def launch_command(self, main_cmd, mount_points=None, dry=False,
+                       verbose=False):
+        py_path = []
+        remote_cmds = utils.CommandBuilder()
+        remote_cleanup_commands = utils.CommandBuilder()
+        mnt_args = ''
+        remote_cmds.append('docker login')
+        print ('self.docker_image: ', self.singularity_image)
+        remote_cmds.append('docker pull ' + self.singularity_image)
+        
+        self.build_singularity(dry=False, verbose=False)
+
+        tmp_dir_cmd = 'mkdir -p %s' % self.tmp_dir
+        tmp_dir_cmd = self.credentials.get_ssh_bash_cmd(tmp_dir_cmd)
+        utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
+
+        # SCP Code over
+        for mount in mount_points:
+            if isinstance(mount, MountLocal):
+                if mount.read_only:
+                    with mount.gzip() as gzip_file:
+                        # scp
+                        base_name = os.path.basename(gzip_file)
+                        # file_hash = hash_file(gzip_path)  # TODO: store all code in a special "caches" folder
+                        remote_mnt_dir = os.path.join(self.tmp_dir,
+                                                      os.path.splitext(
+                                                          base_name)[0])
+                        remote_tar = os.path.join(self.tmp_dir, base_name)
+                        scp_cmd = self.credentials.get_scp_cmd(gzip_file,
+                                                               remote_tar)
+                        utils.call_and_wait(scp_cmd, dry=dry, verbose=verbose)
+                    remote_cmds.append('mkdir -p %s' % remote_mnt_dir)
+                    unzip_cmd = 'tar -xf %s -C %s' % (
+                    remote_tar, remote_mnt_dir)
+                    remote_cmds.append(unzip_cmd)
+                    mount_point = mount.mount_dir()
+                    mnt_args += ' -v %s:%s' % (os.path.join(remote_mnt_dir,
+                                                            os.path.basename(
+                                                                mount.mount_point)),
+                                               mount_point)
+                else:
+                    # remote_cmds.append('mkdir -p %s' % mount.mount_point)
+                    remote_cmds.append('mkdir -p %s' % mount.local_dir_raw)
+                    mnt_args += ' -v %s:%s' % (
+                    mount.local_dir_raw, mount.mount_point)
+
+                if mount.pythonpath:
+                    py_path.append(mount_point)
+            else:
+                raise NotImplementedError()
+
+        if self.checkpoint and self.checkpoint.restore:
+            raise NotImplementedError()
+        else:
+            cmd_s = self.create_singularity_cmd(main_cmd, use_tty=False,
+                                             extra_args=mnt_args,
+                                             mount_points=mount_points)
+
+        remote_cmds.append(cmd_s)
+        remote_cmds.extend(remote_cleanup_commands)
+
+        with tempfile.NamedTemporaryFile('w+', suffix='.sh') as ntf:
+            for cmd in remote_cmds:
+                if verbose:
+                    ntf.write(
+                        'echo "%s$ %s"\n' % (self.credentials.user_host, cmd))
+                ntf.write(cmd + '\n')
+            ntf.seek(0)
+            ssh_cmd = self.credentials.get_ssh_script_cmd(ntf.name)
+
+            utils.call_and_wait(ssh_cmd, dry=dry, verbose=verbose)
+
+    def build_singularity(self, dry=False, verbose=False):
+        print("Building singularity image from docker")
+        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build local_app.sif docker-daemon://ubuntu:20.04"
+        utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
+        self.singularity_image="local_app.sif"
+        tmp_dir_cmd = "chmod 777 local_app.sif"
+        utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
+        mv_dir_cmd = "rsync -av --progress -e ssh local_app.sif  localhost:"
+        utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
 
 
 class BrcHighThroughputMode(SingularityMode):

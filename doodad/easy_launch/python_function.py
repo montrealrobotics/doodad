@@ -272,12 +272,21 @@ def run_experiment(
             hostname=ssh_dict['hostname'],
             identity_file=config.SSH_PRIVATE_KEY
         )
-        dmode = doodad.mode.SSHDocker(
-            credentials=credentials,
-            image=docker_image,
-            gpu=use_gpu,
-            tmp_dir=config.SSH_TMP_DIR,
-        )
+        if ssh_dict['use_singularity']:
+            dmode = doodad.mode.SSHSingularity(
+                credentials=credentials,
+                image=docker_image,
+                gpu=use_gpu,
+                tmp_dir=config.SSH_TMP_DIR,
+            )
+        else:
+            dmode = doodad.mode.SSHDocker(
+                credentials=credentials,
+                image=docker_image,
+                gpu=use_gpu,
+                tmp_dir=config.SSH_TMP_DIR,
+                use_singularity=ssh_dict['use_singularity']
+            )
     elif mode == 'local_singularity':
         dmode = doodad.mode.LocalSingularity(
             image=singularity_image,

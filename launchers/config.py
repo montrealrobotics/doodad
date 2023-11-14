@@ -1,9 +1,11 @@
 ### Update this to the location you have saved the SMiRL code.
-BASE_CODE_DIR = "<location_of_SMiRL_Code_parent_directory>"
+BASE_CODE_DIR = "<location_of_Code_parent_directory>"
 
 CODE_DIRS_TO_MOUNT = [
+    BASE_CODE_DIR + 'code_dir'
 ]
 NON_CODE_DIRS_TO_MOUNT = [
+    ## Maybe mount some dir with data or key files.
 ]
 LOCAL_LOG_DIR = '/home/gberseth/learning_data/smirl/'
 OUTPUT_DIR_FOR_DOODAD_TARGET = '/home/gberseth/learning_data/smirl/'
@@ -40,10 +42,11 @@ SSH_HOSTS = dict(
         username='TODO',
         hostname='TODO.domain.edu',
     ),
-    deepspace12=dict(
+    beluga=dict(
         username='gberseth',
-        hostname='deepspace12',
-        
+        hostname='beluga.computecanada.ca',
+        use_singularity=True,
+        use_slurm=True,
     ),
 )
 SSH_DEFAULT_HOST = 'gberseth'
@@ -67,20 +70,25 @@ where you will be running the generated script.
 """
 SLURM_CONFIGS = dict(
     cpu=dict(
-        account_name='TODO',
-        partition='TODO',
+        account_name='rrg-gberseth',
+        partition='',
         n_gpus=0,
-        max_num_cores_per_node=20,
+        max_num_cores_per_node=4,
+        time_in_mins="1:00:00", ### 1 hour(s)
+        mem="8Gb",
     ),
     gpu=dict(
-        account_name='TODO',
-        partition='TODO',
+        account_name='rrg-gberseth',
+        partition='',
         n_gpus=1,
-        max_num_cores_per_node=8,
+        max_num_cores_per_node=4,
         n_cpus_per_task=2,
+        time_in_mins="1:00:00", ### 1 hour(s)
+        mem="8Gb",
     ),
 )
-BRC_EXTRA_SINGULARITY_ARGS = '--writable -B /usr/lib64 -B /var/lib/dcv-gl'
+
+BRC_EXTRA_SINGULARITY_ARGS = ''
 TASKFILE_PATH_ON_BRC = 'TODO'
 
 

@@ -39,6 +39,11 @@ See [ec2_launch_test.py](https://github.com/justinjfu/doodad/blob/master/example
 
 See the [wiki](https://github.com/justinjfu/doodad/wiki/Home)
 
+## Related Software to Install.
+
+- [Apptainer](https://apptainer.org/docs/admin/main/installation.html)
+- [Docker](https://apptainer.org/docs/admin/main/installation.html)
+
 ## Changelog
 17 March 2020 (v0.2.4)
  - Add `doodad.easy_launch` to make it very easy to run python functions across different modes supported by `doodad`.

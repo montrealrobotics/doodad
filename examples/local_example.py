@@ -19,8 +19,8 @@ if __name__ == "__main__":
 
     ### Consider using some method to construct your variant from a condif file.
     variant = { "exp_name": "test",
-           "doodad_run_mode": "ssh",
-           "ssh_host": "deepspace12",
+           "doodad_run_mode": "slurm_singularity_ssh",
+           "ssh_host": "beluga",
            "training_processor_type": "cpu",
            "data": 45}
 

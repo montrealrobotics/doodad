@@ -262,7 +262,7 @@ def run_experiment(
             image=docker_image,
             gpu=use_gpu,
         )
-    elif mode == 'ssh':
+    elif mode in {'ssh'}:
         if ssh_host:
             ssh_dict = config.SSH_HOSTS[ssh_host]
         else:
@@ -292,7 +292,7 @@ def run_experiment(
             gpu=use_gpu,
             pre_cmd=config.SINGULARITY_PRE_CMDS,
         )
-    elif mode in {'slurm_singularity', 'sss', 'htp'}:
+    elif mode in {'slurm_singularity', 'sss', 'htp', 'slurm_singularity_ssh'}:
         if slurm_config_name is None:
             slurm_config_name = "gpu" if use_gpu else "cpu"
         slurm_config_kwargs = config.SLURM_CONFIGS[slurm_config_name]
@@ -326,6 +326,27 @@ def run_experiment(
                 n_tasks_total=_global_n_tasks_total,
                 launch_id=_global_launch_uuid
             )
+        elif mode == 'slurm_singularity_ssh':
+            if ssh_host:
+                ssh_dict = config.SSH_HOSTS[ssh_host]
+            else:
+                ssh_dict = config.SSH_HOSTS[config.SSH_DEFAULT_HOST]
+            credentials = doodad.ssh.credentials.SSHCredentials(
+                username=ssh_dict['username'],
+                hostname=ssh_dict['hostname'],
+                identity_file=config.SSH_PRIVATE_KEY
+            )
+            dmode = doodad.mode.SSHSlurmSingularity(
+                credentials=credentials,
+                image=docker_image,
+                gpu=use_gpu,
+                tmp_dir=config.SSH_TMP_DIR,
+                skip_wait=skip_wait,
+                pre_cmd=config.SINGULARITY_PRE_CMDS,
+                extra_args=config.BRC_EXTRA_SINGULARITY_ARGS,
+                slurm_config=slurm_config,
+            )
+
         else:
             dmode = doodad.mode.ScriptSlurmSingularity(
                 image=singularity_image,
@@ -407,7 +428,7 @@ def run_experiment(
         base_log_dir_for_script = base_log_dir
     elif mode == 'local_docker':
         base_log_dir_for_script = config.OUTPUT_DIR_FOR_DOODAD_TARGET
-    elif mode == 'ssh':
+    elif mode in {'slurm_singularity_ssh', 'ssh'}:
         base_log_dir_for_script = config.OUTPUT_DIR_FOR_DOODAD_TARGET
         if (ssh_dict['use_singularity']):
             ## This might be a bit of a hack. It depends on how singularity works on remote servers and if they use the same dir structure in the singularity image.
@@ -562,7 +583,7 @@ def create_mounts(
             mount_point=config.OUTPUT_DIR_FOR_DOODAD_TARGET,
             output=True,
         )
-    elif mode == 'ssh':
+    elif mode in {'ssh', 'slurm_singularity_ssh'}:
         output_mount = mount.MountLocal(
             local_dir=base_log_dir,
             mount_point=config.OUTPUT_DIR_FOR_DOODAD_TARGET,

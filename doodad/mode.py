@@ -6,6 +6,7 @@ import uuid
 import time
 import base64
 import json
+# import class_util as classu
 
 from doodad.slurm.slurm_util import SlurmConfig
 
@@ -967,6 +968,10 @@ class SSHSingularity(SingularityMode):
         remote_cleanup_commands = utils.CommandBuilder()
         mnt_args = ''
         
+        print ('self.docker_image: ', self.singularity_image)
+        utils.call_and_wait('docker login', dry=dry, verbose=verbose)
+        utils.call_and_wait('docker pull ' + self.singularity_image, dry=dry, verbose=verbose)
+        
         self.build_singularity(dry=False, verbose=False)
 
         remote_cmds.append('module load apptainer')
@@ -1143,10 +1148,18 @@ class SlurmSingularity(SingularityMode):
 class SSHSlurmSingularity(SSHSingularity):
     TMP_DIR = '~/.remote_tmp'
 
-    def __init__(self, credentials=None, tmp_dir=None, use_singularity=False, **docker_args):
+    # @classu.hidden_member_initialize
+    def __init__(self, credentials=None, 
+                 tmp_dir=None, 
+                 use_singularity=False,
+                 slurm_config={},
+                 skip_wait=False,
+                  **docker_args):
         if tmp_dir is None:
             tmp_dir = SSHDocker.TMP_DIR
         super(SSHSingularity, self).__init__(**docker_args)
+        self._slurm_config = slurm_config
+        self._skip_wait = skip_wait
         self.credentials = credentials
         self.run_id = 'run_%s' % uuid.uuid4()
         self.tmp_dir = os.path.join(tmp_dir, self.run_id)
@@ -1157,19 +1170,37 @@ class SSHSlurmSingularity(SSHSingularity):
                        verbose=False):
         
         ## Run some empty command just to build and push the singularity image
-        super(SSHSlurmSingularity, self).launch_command(main_cmd, mount_points=None, dry=False,
-                       verbose=False)
+        
+        super(SSHSlurmSingularity, self).launch_command(' ls', 
+                                                        mount_points=mount_points, 
+                                                        dry=dry,
+                                                        verbose=verbose)
         
         # Then we can create a slurm command and send it to the cluster.
+        
+        remote_cmds = utils.CommandBuilder()
+        remote_cleanup_commands = utils.CommandBuilder()
+
+        remote_cmds.append('module load apptainer')
+        
         full_cmd = self.create_slurm_command(
-            cmd, mount_points=mount_points,
+            main_cmd, mount_points=mount_points,
         )
-        utils.call_and_wait(
-            full_cmd, verbose=verbose, dry=dry, skip_wait=self.skip_wait
-        )
-    
-    
-    
+        print ('SLURM command: ', full_cmd)
+        
+        remote_cmds.append(full_cmd)
+        remote_cmds.extend(remote_cleanup_commands)
+
+        with tempfile.NamedTemporaryFile('w+', suffix='.sh') as ntf:
+            for cmd in remote_cmds:
+                if verbose:
+                    ntf.write(
+                        'echo "%s$ %s"\n' % (self.credentials.user_host, cmd))
+                ntf.write(cmd + '\n')
+            ntf.seek(0)
+            ssh_cmd = self.credentials.get_ssh_script_cmd(ntf.name)
+
+            utils.call_and_wait(ssh_cmd, dry=dry, verbose=verbose)
     
     def create_slurm_command(self, cmd, mount_points=None):
         singularity_cmd = self.create_singularity_cmd(

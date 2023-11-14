@@ -9,11 +9,13 @@ EC2 code is based on [rllab](https://github.com/rll/rllab/)'s code.
 ## Setup
 
 - (Optional) create a conda environment for testing launching
+
 ```
 conda create --name doodad python=3.7 pip
 ```
 
 - Install this library in your python environment.
+
 ```
 pip install -e ./
 ```
@@ -36,6 +38,10 @@ python scripts/ec2_setup.py
 ## Example
 
 Start with [local_example.py](example/local_example.py) that will launch a simple job on beluga.
+
+```
+python examples/local_example.py
+```
 
 See [ec2_launch_test.py](https://github.com/justinjfu/doodad/blob/master/examples/ec2_launch/ec2_launch_test.py) for an example on how to run scripts on EC2, over SSH, or locally.
 

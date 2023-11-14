@@ -8,14 +8,14 @@ EC2 code is based on [rllab](https://github.com/rll/rllab/)'s code.
 
 ## Setup
 
-- Add this repo to your pythonpath. 
+- (Optional) create a conda environment for testing launching
 ```
-export PYTHONPATH=$PYTHONPATH:/path/to/this/repo
+conda create --name doodad python=3.7 pip
 ```
 
-- Install dependencies
+- Install this library in your python environment.
 ```
-pip install -r requirements.txt
+pip install -e ./
 ```
 
 - (Optional) Set up EC2
@@ -24,6 +24,8 @@ python scripts/ec2_setup.py
 ```
 
 - (Optional) Set up [Docker](https://docs.docker.com/engine/installation/). This is required on the target machine if running in a Docker-enabled mode.
+
+- (Optional) Setup [Apptainer](https://apptainer.org/docs/admin/main/installation.html). This is needed to build singularity containers locally and copy them to remote computers.
 
 - (Optional) Set up GCP
   - https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu
@@ -38,11 +40,6 @@ See [ec2_launch_test.py](https://github.com/justinjfu/doodad/blob/master/example
 ## Tutorial
 
 See the [wiki](https://github.com/justinjfu/doodad/wiki/Home)
-
-## Related Software to Install.
-
-- [Apptainer](https://apptainer.org/docs/admin/main/installation.html)
-- [Docker](https://apptainer.org/docs/admin/main/installation.html)
 
 ## Changelog
 17 March 2020 (v0.2.4)

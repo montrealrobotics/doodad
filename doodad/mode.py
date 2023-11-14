@@ -1037,6 +1037,7 @@ class SSHSingularity(SingularityMode):
 
     def build_singularity(self, dry=False, verbose=False):
         print("Building singularity image from docker container: docker-daemon://" + self.singularity_image)
+        ## Build to the parent directory just to avoid packaging the singularity image in the code for SCP (don't copy it twice...)
         tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build ../local_app.sif docker-daemon://" + self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
         

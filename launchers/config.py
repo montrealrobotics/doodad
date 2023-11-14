@@ -2,7 +2,7 @@
 BASE_CODE_DIR = "<location_of_Code_parent_directory>"
 
 CODE_DIRS_TO_MOUNT = [
-    BASE_CODE_DIR + 'code_dir'
+    # BASE_CODE_DIR + 'code_dir'
 ]
 NON_CODE_DIRS_TO_MOUNT = [
     ## Maybe mount some dir with data or key files.
@@ -49,7 +49,7 @@ SSH_HOSTS = dict(
         use_slurm=True,
     ),
 )
-SSH_DEFAULT_HOST = 'gberseth'
+SSH_DEFAULT_HOST = 'default'
 SSH_PRIVATE_KEY = '~/.ssh/id_rsa'
 SSH_LOG_DIR = '~/shared/res'
 SSH_TMP_DIR = '~/shared/tmp'

@@ -7,10 +7,10 @@ NON_CODE_DIRS_TO_MOUNT = [
 LOCAL_LOG_DIR = '/tmp/doodad-output/'
 OUTPUT_DIR_FOR_DOODAD_TARGET = '/tmp/doodad-output/'
 DIR_AND_MOUNT_POINT_MAPPINGS = [
-    dict(
-        local_dir='/home/gberseth/.mujoco/',
-        mount_point='/root/.mujoco',
-    ),
+#     dict(
+#         local_dir='/home/gberseth/.mujoco/',
+#         mount_point='/root/.mujoco',
+#     ),
 #     dict(
 #         local_dir='/home/gberseth/playground/CoMPS',
 #         mount_point='/root/playground/CoMPS',
@@ -28,11 +28,11 @@ AWS Settings
 AWS_S3_PATH = 'TODO'
 
 # The docker image is looked up on dockerhub.com.
-DOODAD_DOCKER_IMAGE = 'TODO'
+DOODAD_DOCKER_IMAGE = 'gberseth/doodad-test:latest'
 INSTANCE_TYPE = 'c4.2xlarge'
 SPOT_PRICE = 0.3
 
-GPU_DOODAD_DOCKER_IMAGE = 'TODO'
+GPU_DOODAD_DOCKER_IMAGE = 'gberseth/doodad-test:latest'
 GPU_INSTANCE_TYPE = 'g3.4xlarge'
 GPU_SPOT_PRICE = 0.5
 REGION_TO_GPU_AWS_IMAGE_ID = {
@@ -52,6 +52,12 @@ SSH_HOSTS = dict(
     default=dict(
         username='TODO',
         hostname='TODO.domain.edu',
+    ),
+    beluga=dict(
+        username='gberseth',
+        hostname='beluga.computecanada.ca',
+        use_singularity=True,
+        use_slurm=True,
     ),
 )
 SSH_DEFAULT_HOST = 'user'
@@ -74,17 +80,21 @@ The comments assume you're running on BRC.
 """
 SLURM_CONFIGS = dict(
     cpu=dict(
-        account_name='TODO',
-        partition='TODO',
+        account_name='rrg-gberseth',
+        partition='',
         n_gpus=0,
-        max_num_cores_per_node=20,
+        max_num_cores_per_node=4,
+        time_in_mins="1:00:00", ### 1 hour(s)
+        mem="8Gb",
     ),
     gpu=dict(
-        account_name='TODO',
-        partition='TODO',
+        account_name='rrg-gberseth',
+        partition='',
         n_gpus=1,
-        max_num_cores_per_node=8,
+        max_num_cores_per_node=4,
         n_cpus_per_task=2,
+        time_in_mins="1:00:00", ### 1 hour(s)
+        mem="8Gb",
     ),
 )
 # This is necessary for the GPU machines on BRC.

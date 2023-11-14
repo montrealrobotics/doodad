@@ -21,6 +21,7 @@ pip install -e ./
 ```
 
 - (Optional) Set up EC2
+
 ```
 python scripts/ec2_setup.py
 ```

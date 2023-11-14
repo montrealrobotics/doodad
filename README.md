@@ -35,7 +35,11 @@ python scripts/ec2_setup.py
 
 ## Example
 
+Start with [local_example.py](example/local_example.py) that will launch a simple job on beluga.
+
 See [ec2_launch_test.py](https://github.com/justinjfu/doodad/blob/master/examples/ec2_launch/ec2_launch_test.py) for an example on how to run scripts on EC2, over SSH, or locally.
+
+
 
 ## Tutorial
 

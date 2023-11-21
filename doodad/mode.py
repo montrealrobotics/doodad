@@ -185,6 +185,8 @@ class SSHDocker(DockerMode):
 
     def launch_command(self, main_cmd, mount_points=None, dry=False,
                        verbose=False):
+        
+        
         py_path = []
         remote_cmds = utils.CommandBuilder()
         remote_cleanup_commands = utils.CommandBuilder()
@@ -239,6 +241,7 @@ class SSHDocker(DockerMode):
                                              extra_args=mnt_args,
                                              pythonpath=py_path)
 
+        print("docker_cmd: ", docker_cmd)
         remote_cmds.append(docker_cmd)
         remote_cmds.extend(remote_cleanup_commands)
 
@@ -890,7 +893,7 @@ class SingularityMode(LaunchMode):
             use_tty=False,
             extra_args=False
     ):
-        extra_args = self._extra_args
+        # extra_args = self._extra_args
         cmd_list = utils.CommandBuilder()
         if self.pre_cmd:
             cmd_list.extend(self.pre_cmd)
@@ -999,14 +1002,14 @@ class SSHSingularity(SingularityMode):
                     remote_tar, remote_mnt_dir)
                     remote_cmds.append(unzip_cmd)
                     mount_point = mount.mount_dir()
-                    mnt_args += ' -v %s:%s' % (os.path.join(remote_mnt_dir,
+                    mnt_args += ' --mount type=bind,src=%s,dst=%s' % (os.path.join(remote_mnt_dir,
                                                             os.path.basename(
                                                                 mount.mount_point)),
                                                mount_point)
                 else:
                     # remote_cmds.append('mkdir -p %s' % mount.mount_point)
                     remote_cmds.append('mkdir -p %s' % mount.local_dir_raw)
-                    mnt_args += ' -v %s:%s' % (
+                    mnt_args += ' --mount type=bind,src=%s,dst=%s' % (
                     mount.local_dir_raw, mount.mount_point)
 
                 if mount.pythonpath:

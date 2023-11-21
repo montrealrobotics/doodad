@@ -75,7 +75,7 @@ SLURM_CONFIGS = dict(
         n_cpus_per_task=2,
     ),
 )
-BRC_EXTRA_SINGULARITY_ARGS = '--writable -B /usr/lib64 -B /var/lib/dcv-gl'
+EXTRA_SINGULARITY_ARGS = '--writable -B /usr/lib64 -B /var/lib/dcv-gl'
 TASKFILE_PATH_ON_BRC = 'TODO'
 
 

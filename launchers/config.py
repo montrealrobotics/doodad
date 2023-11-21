@@ -88,7 +88,7 @@ SLURM_CONFIGS = dict(
     ),
 )
 
-BRC_EXTRA_SINGULARITY_ARGS = ''
+EXTRA_SINGULARITY_ARGS = '--writable-tmpfs'
 TASKFILE_PATH_ON_BRC = 'TODO'
 
 

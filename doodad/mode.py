@@ -9,6 +9,7 @@ import json
 # import class_util as classu
 
 from doodad.slurm.slurm_util import SlurmConfig
+from doodad.easy_launch import config
 
 
 try:
@@ -891,9 +892,9 @@ class SingularityMode(LaunchMode):
             main_cmd,
             mount_points=None,
             use_tty=False,
-            extra_args=False
+            extra_args=""
     ):
-        # extra_args = self._extra_args
+        extra_args = self._extra_args + extra_args
         cmd_list = utils.CommandBuilder()
         if self.pre_cmd:
             cmd_list.extend(self.pre_cmd)
@@ -1037,17 +1038,21 @@ class SSHSingularity(SingularityMode):
             ssh_cmd = self.credentials.get_ssh_script_cmd(ntf.name)
 
             utils.call_and_wait(ssh_cmd, dry=dry, verbose=verbose)
+            
+        return mnt_args
 
     def build_singularity(self, dry=False, verbose=False):
         print("Building singularity image from docker container: docker-daemon://" + self.singularity_image)
         ## Build to the parent directory just to avoid packaging the singularity image in the code for SCP (don't copy it twice...)
-        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build ../local_app.sif docker-daemon://" + self.singularity_image
+        tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer build --writable-tmpfs  "+ config.BASE_CODE_DIR + "local_app.sif docker-daemon://" + self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
+        # tmp_dir_cmd = "APPTAINER_NOHTTPS=1 apptainer overlay create --size 1024 ../local_app.sif "
+        # utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
         
         self.singularity_image="local_app.sif"
-        tmp_dir_cmd = "chmod 777 ../"+ self.singularity_image
+        tmp_dir_cmd = "chmod 777 " + config.BASE_CODE_DIR + self.singularity_image
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
-        mv_dir_cmd = "rsync -av --progress -e ssh ../" + self.singularity_image + " " + self.credentials.user_host + ':'
+        mv_dir_cmd = "rsync -av --progress -e ssh " + config.BASE_CODE_DIR + self.singularity_image + " " + self.credentials.user_host + ':'
         print ('moving built singularity image')
         print (mv_dir_cmd)
         utils.call_and_wait(mv_dir_cmd, dry=dry, verbose=verbose)
@@ -1175,7 +1180,7 @@ class SSHSlurmSingularity(SSHSingularity):
         
         ## Run some empty command just to build and push the singularity image
         
-        super(SSHSlurmSingularity, self).launch_command(' ls', 
+        mnt_args = super(SSHSlurmSingularity, self).launch_command(' ls', 
                                                         mount_points=mount_points, 
                                                         dry=dry,
                                                         verbose=verbose)
@@ -1189,6 +1194,7 @@ class SSHSlurmSingularity(SSHSingularity):
         
         full_cmd = self.create_slurm_command(
             main_cmd, mount_points=mount_points,
+            extra_args=mnt_args
         )
         print ('SLURM command: ', full_cmd)
         
@@ -1206,10 +1212,11 @@ class SSHSlurmSingularity(SSHSingularity):
 
             utils.call_and_wait(ssh_cmd, dry=dry, verbose=verbose)
     
-    def create_slurm_command(self, cmd, mount_points=None):
+    def create_slurm_command(self, cmd, mount_points=None, extra_args=""):
         singularity_cmd = self.create_singularity_cmd(
             cmd,
             mount_points=mount_points,
+            extra_args=extra_args
         )
         full_cmd = slurm_util.wrap_command_with_sbatch(
             singularity_cmd,

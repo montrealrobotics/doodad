@@ -278,6 +278,7 @@ def run_experiment(
                 image=docker_image,
                 gpu=use_gpu,
                 tmp_dir=config.SSH_TMP_DIR,
+                extra_args=config.EXTRA_SINGULARITY_ARGS,
             )
         else:
             dmode = doodad.mode.SSHDocker(
@@ -311,7 +312,7 @@ def run_experiment(
                 gpu=use_gpu,
                 skip_wait=skip_wait,
                 pre_cmd=config.SINGULARITY_PRE_CMDS,
-                extra_args=config.BRC_EXTRA_SINGULARITY_ARGS,
+                extra_args=config.EXTRA_SINGULARITY_ARGS,
                 slurm_config=slurm_config,
             )
         elif mode == 'htp':
@@ -319,7 +320,7 @@ def run_experiment(
                 image=singularity_image,
                 gpu=use_gpu,
                 pre_cmd=config.SSS_PRE_CMDS,
-                extra_args=config.BRC_EXTRA_SINGULARITY_ARGS,
+                extra_args=config.EXTRA_SINGULARITY_ARGS,
                 slurm_config=slurm_config,
                 taskfile_dir_on_brc=config.TASKFILE_DIR_ON_BRC,
                 overwrite_task_script=_global_is_first_launch,
@@ -343,7 +344,7 @@ def run_experiment(
                 tmp_dir=config.SSH_TMP_DIR,
                 skip_wait=skip_wait,
                 pre_cmd=config.SINGULARITY_PRE_CMDS,
-                extra_args=config.BRC_EXTRA_SINGULARITY_ARGS,
+                extra_args=config.EXTRA_SINGULARITY_ARGS,
                 slurm_config=slurm_config,
             )
 
@@ -352,7 +353,7 @@ def run_experiment(
                 image=singularity_image,
                 gpu=use_gpu,
                 pre_cmd=config.SSS_PRE_CMDS,
-                extra_args=config.BRC_EXTRA_SINGULARITY_ARGS,
+                extra_args=config.EXTRA_SINGULARITY_ARGS,
                 slurm_config=slurm_config,
                 overwrite_script=_global_is_first_launch,
             )

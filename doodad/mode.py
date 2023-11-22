@@ -979,6 +979,7 @@ class SSHSingularity(SingularityMode):
         self.build_singularity(dry=False, verbose=False)
 
         remote_cmds.append('module load apptainer')
+        remote_cmds.append('module load singularity')
         tmp_dir_cmd = 'mkdir -p %s' % self.tmp_dir
         tmp_dir_cmd = self.credentials.get_ssh_bash_cmd(tmp_dir_cmd)
         utils.call_and_wait(tmp_dir_cmd, dry=dry, verbose=verbose)
@@ -1003,14 +1004,14 @@ class SSHSingularity(SingularityMode):
                     remote_tar, remote_mnt_dir)
                     remote_cmds.append(unzip_cmd)
                     mount_point = mount.mount_dir()
-                    mnt_args += ' --mount type=bind,src=%s,dst=%s' % (os.path.join(remote_mnt_dir,
+                    mnt_args += ' --bind %s:%s' % (os.path.join(remote_mnt_dir,
                                                             os.path.basename(
                                                                 mount.mount_point)),
                                                mount_point)
                 else:
                     # remote_cmds.append('mkdir -p %s' % mount.mount_point)
                     remote_cmds.append('mkdir -p %s' % mount.local_dir_raw)
-                    mnt_args += ' --mount type=bind,src=%s,dst=%s' % (
+                    mnt_args += ' --bind %s:%s' % (
                     mount.local_dir_raw, mount.mount_point)
 
                 if mount.pythonpath:

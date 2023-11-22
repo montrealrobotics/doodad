@@ -1,4 +1,4 @@
 boto3
 boto
-cloudpickle==1.3.0
+cloudpickle==1.6.0
 # awscli
